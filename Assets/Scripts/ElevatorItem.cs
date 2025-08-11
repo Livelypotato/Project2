@@ -8,6 +8,7 @@ public class ElevatorItem : TriggerBase
     bool _isAllowMoving = false;
     public PlayerInput _playerInput; // 玩家输入组件
     private InputAction _downAction; // 移动的输入动作
+    [SerializeField] GameObject PressHint; // 提示按键的UI
 
     public UnityEvent OnDownElevator;
 
@@ -38,6 +39,7 @@ public class ElevatorItem : TriggerBase
         base.OnTriggerEnter2D(other);
         if (other.CompareTag(TargetTag))
         {
+            PressHint.SetActive(true); // 显示提示UI
             _isAllowMoving = true;
             _downAction.performed += OnElevatorAction;
         }
@@ -48,6 +50,7 @@ public class ElevatorItem : TriggerBase
     {
         if (other.CompareTag(TargetTag))
         {
+            PressHint.SetActive(false); // 隐藏提示UI
             _isAllowMoving = false;
             _downAction.performed -= OnElevatorAction;
         }

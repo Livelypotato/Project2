@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class DialogTrigger : MonoBehaviour
 {
     public GameObject dialogPanel;   // 对话框UI整体
-    public Text dialogText;          // 对话框中显示文字的Text组件
-    [TextArea(3,10)]
+    public TMP_Text dialogTMPText;   // 如果使用TextMeshPro，则使用这个组件
+    [TextArea(3, 10)]
     public string message;           // 要显示的文字内容
     public float typingSpeed = 0.05f; // 文字逐字显示速度
 
@@ -34,7 +35,7 @@ public class DialogTrigger : MonoBehaviour
                 if (typingCoroutine != null)
                 {
                     StopCoroutine(typingCoroutine);
-                    dialogText.text = message;
+                    dialogTMPText.text = message;
                 }
             }
         }
@@ -42,10 +43,10 @@ public class DialogTrigger : MonoBehaviour
 
     IEnumerator TypeText(string text)
     {
-        dialogText.text = "";
+        dialogTMPText.text = "";
         foreach (char c in text)
         {
-            dialogText.text += c;
+            dialogTMPText.text += c;
             yield return new WaitForSeconds(typingSpeed);
         }
         typingCoroutine = null;
