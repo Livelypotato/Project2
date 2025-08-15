@@ -1,8 +1,9 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
-public class DialogTrigger : MonoBehaviour
+public class DialogTriggerMiniGame : MonoBehaviour
 {
     public GameObject dialogPanel;          // 对话框UI整体
     public TMP_Text dialogTMPText;          // 对话文字
@@ -10,24 +11,25 @@ public class DialogTrigger : MonoBehaviour
     public string message;                  // 要显示的文字内容
     public float typingSpeed = 0.05f;       // 打字速度
 
-    public SpriteRenderer eKeyPrompt;       // E键提示的 SpriteRenderer
+    public SpriteRenderer eKeyPrompt;       // E键提示SpriteRenderer
+    public GameObject miniGameRoot;         // ⬅ 拖入小游戏整体父物体
+    public GameObject mainSceneRoot;        // ⬅ 主场景内容父物体(可选)
 
     private bool playerInRange = false;
     private Coroutine typingCoroutine;
 
     void Awake()
     {
-        dialogPanel.SetActive(false);       
-        if (eKeyPrompt != null)
-            eKeyPrompt.enabled = false;     // 在 Awake 就隐藏（比 Start 更早）
+        dialogPanel.SetActive(false);
+        miniGameRoot.SetActive(false);      // 游戏开始隐藏
+        if (eKeyPrompt != null) eKeyPrompt.enabled = false;
     }
 
     void Update()
     {
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            if (eKeyPrompt != null)
-                eKeyPrompt.enabled = false;
+            if (eKeyPrompt != null) eKeyPrompt.enabled = false;
 
             if (!dialogPanel.activeSelf)
             {
@@ -38,9 +40,11 @@ public class DialogTrigger : MonoBehaviour
             {
                 if (typingCoroutine != null)
                 {
+                    // 快速跳过
                     StopCoroutine(typingCoroutine);
                     dialogTMPText.text = message;
                     typingCoroutine = null;
+                    StartMiniGame();
                 }
             }
         }
@@ -55,6 +59,14 @@ public class DialogTrigger : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
         typingCoroutine = null;
+        StartMiniGame();     // 播放完自动开始小游戏
+    }
+
+    void StartMiniGame()
+    {
+        dialogPanel.SetActive(false);
+        if (mainSceneRoot != null) mainSceneRoot.SetActive(false);
+        miniGameRoot.SetActive(true);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -62,8 +74,7 @@ public class DialogTrigger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerInRange = true;
-            if (eKeyPrompt != null)
-                eKeyPrompt.enabled = true;
+            if (eKeyPrompt != null) eKeyPrompt.enabled = true;
         }
     }
 
@@ -78,8 +89,7 @@ public class DialogTrigger : MonoBehaviour
                 StopCoroutine(typingCoroutine);
                 typingCoroutine = null;
             }
-            if (eKeyPrompt != null)
-                eKeyPrompt.enabled = false;
+            if (eKeyPrompt != null) eKeyPrompt.enabled = false;
         }
     }
 }
