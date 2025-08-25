@@ -37,7 +37,6 @@ public class DraggableIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         Debug.Log($"开始拖拽 {name} (ID: {iconId})");
-        canvasGroup.alpha = 0.6f;
         canvasGroup.blocksRaycasts = false;
         
         // 如果当前在某个DropZone中，先清理该区域的引用

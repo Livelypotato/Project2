@@ -23,6 +23,7 @@ public class DialogTriggerMiniGame : MonoBehaviour
         dialogPanel.SetActive(false);
         miniGameRoot.SetActive(false);      // 游戏开始隐藏
         if (eKeyPrompt != null) eKeyPrompt.enabled = false;
+        if (dialogTMPText != null) dialogTMPText.text = ""; // 启动时清空
     }
 
     void Update()
@@ -40,7 +41,6 @@ public class DialogTriggerMiniGame : MonoBehaviour
             {
                 if (typingCoroutine != null)
                 {
-                    // 快速跳过
                     StopCoroutine(typingCoroutine);
                     dialogTMPText.text = message;
                     typingCoroutine = null;
@@ -59,12 +59,16 @@ public class DialogTriggerMiniGame : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
         typingCoroutine = null;
-        StartMiniGame();     // 播放完自动开始小游戏
+        StartMiniGame();
     }
 
     void StartMiniGame()
     {
+        // 关闭对话框并清空文字
         dialogPanel.SetActive(false);
+        if (dialogTMPText != null) dialogTMPText.text = "";
+
+        // 切换场景
         if (mainSceneRoot != null) mainSceneRoot.SetActive(false);
         miniGameRoot.SetActive(true);
     }
@@ -84,12 +88,26 @@ public class DialogTriggerMiniGame : MonoBehaviour
         {
             playerInRange = false;
             dialogPanel.SetActive(false);
+
             if (typingCoroutine != null)
             {
                 StopCoroutine(typingCoroutine);
                 typingCoroutine = null;
             }
+
+            if (dialogTMPText != null) dialogTMPText.text = ""; // 离开时清空文字
             if (eKeyPrompt != null) eKeyPrompt.enabled = false;
         }
+    }
+
+    /// <summary>
+    /// 小游戏结束回到主场景后调用，重置E键提示
+    /// </summary>
+    public void ResetTrigger()
+    {
+        dialogPanel.SetActive(false);
+        if (dialogTMPText != null) dialogTMPText.text = ""; // 回到主场景时清空文字
+        if (eKeyPrompt != null) eKeyPrompt.enabled = true;
+        playerInRange = true;    // 让玩家继续可以按E
     }
 }

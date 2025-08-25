@@ -3,31 +3,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// 挂在小游戏整体MiniGameRoot上
-/// </summary>
 public class ClickButtonMiniGame : MonoBehaviour
 {
-    [Header("场景切换控制")]
     public GameObject miniGameRoot;      // 小游戏父物体（本物体）
     public GameObject mainSceneRoot;     // 主场景Root
 
-    [Header("按钮设置")]
-    public Button button1;      
+    public Button button1;
     public Button button2;
+    
+    public Slider progressSlider1;
+    public Slider progressSlider2;
 
-    [Header("进度条设置")]
-    public Image progressBar1;
-    public Image progressBar2;
-
-    [Header("倒计时设置 (TMP)")]
-    public TextMeshProUGUI countdownTMP;     // ← 使用TMP组件
+    public TextMeshProUGUI countdownTMP;
     public float countdownTime = 30f;
 
-    [Header("长按设置")]
     public float longPressDuration = 3f;
-
-    [Header("连续点击设置")]
     public float rapidClickDecayRate = 0.5f;
     public float clickIncrease = 0.1f;
 
@@ -60,9 +50,7 @@ public class ClickButtonMiniGame : MonoBehaviour
         button2Progress = 0f;
         isButton1Pressing = false;
         gameEnded = false;
-
-        progressBar1.fillAmount = 0f;
-        progressBar2.fillAmount = 0f;
+        
         UpdateCountdownDisplay();
     }
 
@@ -124,15 +112,15 @@ public class ClickButtonMiniGame : MonoBehaviour
 
     void UpdateProgressBars()
     {
-        progressBar1.fillAmount = button1Progress;
-        progressBar2.fillAmount = button2Progress;
+        progressSlider1.value = button1Progress; // 更新进度条组件
+        progressSlider2.value = button2Progress; // 更新进度条组件
     }
 
     void UpdateCountdownDisplay()
     {
         if (countdownTMP != null)
         {
-            countdownTMP.text = $"倒计时: {Mathf.CeilToInt(currentCountdown)}秒";
+            countdownTMP.text = $" {Mathf.CeilToInt(currentCountdown)}";
         }
     }
 
@@ -156,6 +144,14 @@ public class ClickButtonMiniGame : MonoBehaviour
         yield return new WaitForSeconds(1f);
         miniGameRoot.SetActive(false);
         mainSceneRoot.SetActive(true);
+
+        // 让DialogTriggerMiniGame重新生效
+        var trigger = mainSceneRoot.GetComponentInChildren<DialogTriggerMiniGame>();
+        if (trigger != null)
+        {
+            trigger.ResetTrigger();
+        }
+
         InitializeGame();
     }
 }
